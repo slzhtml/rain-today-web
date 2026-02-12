@@ -1,4 +1,19 @@
 // @ts-nocheck
+// === Toggle panneau (doit être en haut pour marcher même si le reste plante) ===
+document.addEventListener("DOMContentLoaded", () => {
+  const panel = document.getElementById("bottomPanel");
+  const btn = document.getElementById("togglePanelBtn");
+  if (!panel || !btn) return;
+
+  btn.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const collapsed = panel.classList.toggle("collapsed");
+    btn.textContent = collapsed ? "⬆ Ouvrir" : "⬇ Réduire";
+    btn.setAttribute("aria-expanded", collapsed ? "false" : "true");
+  });
+});
 
 /* ============
    NOTES
@@ -936,38 +951,4 @@ navigator.geolocation.getCurrentPosition(
   { enableHighAccuracy: true, timeout: 10000 }
 );
 
-// Toggle panneau (mobile + PC)
-(() => {
-  const panel = document.getElementById("bottomPanel");
-  const btn = document.getElementById("togglePanelBtn");
 
-  if (!panel || !btn) {
-    console.warn("Toggle panel: éléments introuvables", { panel, btn });
-    return;
-  }
-
-  btn.addEventListener("click", (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    const collapsed = panel.classList.toggle("collapsed");
-    btn.textContent = collapsed ? "⬆ Ouvrir" : "⬇ Réduire";
-    btn.setAttribute("aria-expanded", collapsed ? "false" : "true");
-  });
-})();
-
-document.addEventListener("DOMContentLoaded", () => {
-  const panel = document.getElementById("bottomPanel");
-  const btn = document.getElementById("togglePanelBtn");
-
-  if (!panel || !btn) return;
-
-  btn.addEventListener("click", (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    const collapsed = panel.classList.toggle("collapsed");
-    btn.textContent = collapsed ? "⬆ Ouvrir" : "⬇ Réduire";
-    btn.setAttribute("aria-expanded", collapsed ? "false" : "true");
-  });
-});

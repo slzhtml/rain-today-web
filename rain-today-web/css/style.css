@@ -692,3 +692,27 @@ body.dark .toast .icon{ background: rgba(255,255,255,.08); }
   top: 50% !important;
   transform: translateY(-50%) !important;
   po
+
+  /* FIX loupe géante */
+.search-label {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-label .search-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px !important;
+  height: 18px !important;
+  max-width: 18px !important;
+  max-height: 18px !important;
+  pointer-events: none;
+}
+
+.search-label .input {
+  padding-right: 40px;
+}
+

@@ -325,7 +325,7 @@ function showRadarFrame(i){
       tileSize: 256,
 
       // ✅ clé du fix zoom : RainViewer natif ~7, on upscale au-dessus
-      maxNativeZoom: 9,
+      maxNativeZoom: 7,
       maxZoom: 19,
 
       updateWhenZooming: true,

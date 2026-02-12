@@ -66,15 +66,72 @@
     <div class="top-row">
       <div id="status">Chargement…</div>
 
-      <div class="toggles">
-        <label><input type="checkbox" id="radarToggle" checked> Pluie (radar)</label>
-        <label><input type="checkbox" id="rainAutoToggle" checked> Déplacement pluie</label>
-        <label><input type="checkbox" id="rainDirToggle" checked> Direction pluie</label>
-        <label><input type="checkbox" id="windParticlesToggle" checked> Vent (particules)</label>
-        <label><input type="checkbox" id="windArrowsToggle"> Vent (flèches)</label>
-        <button id="themeBtn" class="btn" type="button" title="Mode clair/sombre" aria-label="Mode clair/sombre">🌙</button>
-      </div>
-    </div>
+<div class="toggles">
+
+  <div class="checkbox-wrapper-46">
+    <input type="checkbox" id="radarToggle" class="inp-cbx" checked />
+    <label for="radarToggle" class="cbx">
+      <span>
+        <svg viewBox="0 0 12 10" height="10px" width="12px">
+          <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
+        </svg>
+      </span>
+      <span>Pluie (radar)</span>
+    </label>
+  </div>
+
+  <div class="checkbox-wrapper-46">
+    <input type="checkbox" id="rainAutoToggle" class="inp-cbx" checked />
+    <label for="rainAutoToggle" class="cbx">
+      <span>
+        <svg viewBox="0 0 12 10" height="10px" width="12px">
+          <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
+        </svg>
+      </span>
+      <span>Déplacement pluie</span>
+    </label>
+  </div>
+
+  <div class="checkbox-wrapper-46">
+    <input type="checkbox" id="rainDirToggle" class="inp-cbx" checked />
+    <label for="rainDirToggle" class="cbx">
+      <span>
+        <svg viewBox="0 0 12 10" height="10px" width="12px">
+          <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
+        </svg>
+      </span>
+      <span>Direction pluie</span>
+    </label>
+  </div>
+
+  <div class="checkbox-wrapper-46">
+    <input type="checkbox" id="windParticlesToggle" class="inp-cbx" checked />
+    <label for="windParticlesToggle" class="cbx">
+      <span>
+        <svg viewBox="0 0 12 10" height="10px" width="12px">
+          <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
+        </svg>
+      </span>
+      <span>Vent (particules)</span>
+    </label>
+  </div>
+
+  <div class="checkbox-wrapper-46">
+    <input type="checkbox" id="windArrowsToggle" class="inp-cbx" />
+    <label for="windArrowsToggle" class="cbx">
+      <span>
+        <svg viewBox="0 0 12 10" height="10px" width="12px">
+          <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
+        </svg>
+      </span>
+      <span>Vent (flèches)</span>
+    </label>
+  </div>
+
+  <button id="themeBtn" class="btn" type="button">🌙</button>
+
+</div>
+
 
     <div class="controls">
       <button id="playBtn" class="btn" type="button" title="Animer" aria-label="Lecture / Pause">⏸</button>

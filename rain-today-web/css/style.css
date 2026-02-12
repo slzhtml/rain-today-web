@@ -446,3 +446,33 @@ body.dark .toast .icon{ background: rgba(255,255,255,.08); }
   max-height: 92px;
   overflow: hidden;
 }
+
+/* ===== Animations fluides ===== */
+.ui-panel{
+  transition: max-height .35s cubic-bezier(.4,0,.2,1),
+              padding .25s ease,
+              transform .25s ease;
+  will-change: max-height, transform;
+}
+
+#bottomPanel.collapsed{
+  transition: max-height .35s cubic-bezier(.4,0,.2,1);
+}
+
+.btn, .chip, .fav-chip{
+  transition: transform .15s ease, filter .15s ease, opacity .15s ease;
+}
+
+.btn:hover, .chip:hover, .fav-chip:hover{
+  transform: translateY(-1px);
+  filter: brightness(0.98);
+}
+
+.btn:active, .chip:active, .fav-chip:active{
+  transform: translateY(0);
+}
+
+/* Respecte "réduire les animations" du téléphone/OS */
+@media (prefers-reduced-motion: reduce){
+  * { transition: none !important; animation: none !important; }
+}

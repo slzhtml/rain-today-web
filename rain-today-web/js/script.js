@@ -66,6 +66,30 @@ const bmSat = document.getElementById("bmSat");
 const FAV_KEY = "rt_favs_v2";
 const ALERT_KEY = "rt_alerts_v2";
 
+async function getCityName(lat, lon) {
+  try {
+    const res = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=10&addressdetails=1`
+    );
+
+    const data = await res.json();
+
+    if (!data.address) return null;
+
+    return (
+      data.address.city ||
+      data.address.town ||
+      data.address.village ||
+      data.address.municipality ||
+      data.address.county ||
+      null
+    );
+  } catch (err) {
+    console.warn("Reverse geocoding error:", err);
+    return null;
+  }
+}
+
 /* ============
    THEME (smart night mode)
 ============ */
@@ -368,6 +392,9 @@ function updateTimeLabel(){
 async function onMapClick(latlng){
   const { lat, lng } = latlng;
 
+  // ✅ NOUVEAU : ville depuis coordonnées (OSM / Nominatim)
+  const city = await getCityName(lat, lng);
+
   const url =
     `https://api.open-meteo.com/v1/forecast` +
     `?latitude=${lat}&longitude=${lng}` +
@@ -400,9 +427,13 @@ async function onMapClick(latlng){
 
     const stormRisk = thunderRiskFromWeatherCode(wcode);
 
+    const placeLine = city
+      ? `📍 <b>${escapeHtml(city)}</b> — ${lat.toFixed(3)}, ${lng.toFixed(3)}`
+      : `📍 ${lat.toFixed(3)}, ${lng.toFixed(3)}`;
+
     const html = `
       <div style="min-width:270px">
-        <div style="font-weight:900;margin-bottom:6px">📍 ${lat.toFixed(3)}, ${lng.toFixed(3)}</div>
+        <div style="font-weight:900;margin-bottom:6px">${placeLine}</div>
 
         <div>🌡️ Temp: <b>${fmt(temp)}°C</b> — Ressenti: <b>${fmt(feel)}°C</b></div>
 
@@ -432,6 +463,7 @@ async function onMapClick(latlng){
     L.popup().setLatLng([lat, lng]).setContent("Erreur Open-Meteo").openOn(map);
   }
 }
+
 
 /* ============
    WIND: center + particles + arrows

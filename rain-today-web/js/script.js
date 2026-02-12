@@ -124,6 +124,17 @@ function initTheme() {
 ============ */
 async function initMap(lat, lon) {
   map = L.map("map", { zoomControl: true }).setView([lat, lon], 8);
+  
+  // ✅ FIX: empêche le zoom/pan de la carte quand on scroll/click sur l'UI
+  const topbarEl = document.querySelector(".topbar");
+  const bottomPanelEl = document.getElementById("bottomPanel");
+  const resultsEl = document.getElementById("searchResults");
+
+  [topbarEl, bottomPanelEl, resultsEl].forEach((el) => {
+    if (!el) return;
+    L.DomEvent.disableClickPropagation(el);
+    L.DomEvent.disableScrollPropagation(el);
+  });
 
   // Base layers
   baseOSM = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {

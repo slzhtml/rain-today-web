@@ -637,3 +637,24 @@ body.dark .toast .icon{ background: rgba(255,255,255,.08); }
   transform: translateY(-50%);
   pointer-events: none;
 }
+.search-label{
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.search-label .search-icon{
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  pointer-events: none;
+}
+
+.search-label .input{
+  width: 100%;
+  padding-right: 40px; /* espace pour la loupe */
+}

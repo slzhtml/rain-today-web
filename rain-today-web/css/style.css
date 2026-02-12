@@ -476,3 +476,51 @@ body.dark .toast .icon{ background: rgba(255,255,255,.08); }
 @media (prefers-reduced-motion: reduce){
   * { transition: none !important; animation: none !important; }
 }
+/* Search UI (Uiverse - Galahhad) */
+.search-label{
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 320px;           /* ajuste si besoin */
+  max-width: 100%;
+}
+
+.search-label .input{
+  width: 100%;
+  height: 40px;
+  padding: 10px 42px 10px 14px;   /* place pour l’icône */
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(0,0,0,0.35);
+  color: #fff;
+  outline: none;
+}
+
+.search-label .input::placeholder{
+  color: rgba(255,255,255,0.65);
+}
+
+.search-label .input:focus{
+  border-color: rgba(255,255,255,0.35);
+  background: rgba(0,0,0,0.45);
+}
+
+.search-label .search-icon{
+  position: absolute;
+  right: 12px;
+  width: 18px;
+  height: 18px;
+  opacity: 0.85;
+  pointer-events: none;
+}
+
+.search-label .slash-icon{
+  position: absolute;
+  right: 38px;
+  font-size: 12px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.85);
+  pointer-events: none;
+}

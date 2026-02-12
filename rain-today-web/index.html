@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Rain Today Pro</title>
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div id="map"></div>
+
+  <!-- Canvas overlay (vent particules) -->
+  <canvas id="windCanvas"></canvas>
+
+  <!-- Toast notifications (dans le site) -->
+  <div id="toastHost" class="toast-host" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- Top bar: search + basemap switch + favorites -->
+  <div class="topbar">
+    <div class="left-stack">
+      <div class="basemap-switch" role="group" aria-label="Fond de carte">
+        <button id="bmOsm" class="chip active" type="button">OSM</button>
+        <button id="bmSat" class="chip" type="button">Satellite</button>
+      </div>
+
+      <div class="search-wrap">
+        <input id="citySearch" type="text" placeholder="Rechercher une ville…" autocomplete="off" />
+        <div id="searchResults" class="search-results hidden"></div>
+      </div>
+    </div>
+
+    <div class="fav-wrap">
+      <button id="addFavBtn" class="btn">⭐ Ajouter favori</button>
+      <div id="favList" class="fav-list"></div>
+    </div>
+  </div>
+
+  <!-- Bottom panel -->
+  <div class="ui-panel">
+    <div class="top-row">
+      <div id="status">Chargement…</div>
+
+      <div class="toggles">
+        <label><input type="checkbox" id="radarToggle" checked> Pluie (radar)</label>
+        <label><input type="checkbox" id="rainAutoToggle" checked> Déplacement pluie</label>
+        <label><input type="checkbox" id="rainDirToggle" checked> Direction pluie</label>
+        <label><input type="checkbox" id="windParticlesToggle" checked> Vent (particules)</label>
+        <label><input type="checkbox" id="windArrowsToggle"> Vent (flèches)</label>
+        <button id="themeBtn" class="btn" title="Mode clair/sombre">🌙</button>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button id="playBtn" class="btn" title="Animer">⏸</button>
+      <input type="range" id="timeline" min="0" max="10" value="0" />
+      <span id="timeLabel"></span>
+    </div>
+
+    <div class="legend">
+      <div class="legend-col">
+        <div class="legend-title">Pluie (mm/h)</div>
+        <div><span class="swatch rain-0"></span> 0 – 0.2 (faible)</div>
+        <div><span class="swatch rain-1"></span> 0.2 – 2 (modérée)</div>
+        <div><span class="swatch rain-2"></span> 2 – 10 (forte)</div>
+        <div><span class="swatch rain-3"></span> 10+ (très forte)</div>
+      </div>
+
+      <div class="legend-col">
+        <div class="legend-title">Vent (km/h)</div>
+        <div><span class="swatch wind-0"></span> 0 – 15 (calme)</div>
+        <div><span class="swatch wind-1"></span> 15 – 35</div>
+        <div><span class="swatch wind-2"></span> 35 – 60</div>
+        <div><span class="swatch wind-3"></span> 60+ (très fort)</div>
+      </div>
+
+      <div class="legend-col">
+        <div class="legend-title">Neige (cm/h)</div>
+        <div><span class="swatch snow-0"></span> 0 – 0.2 (faible)</div>
+        <div><span class="swatch snow-1"></span> 0.2 – 1 (modérée)</div>
+        <div><span class="swatch snow-2"></span> 1 – 3 (forte)</div>
+        <div><span class="swatch snow-3"></span> 3+ (très forte)</div>
+      </div>
+
+      <div class="legend-col">
+        <div class="legend-title">Orage (risque)</div>
+        <div><span class="swatch storm-0"></span> faible</div>
+        <div><span class="swatch storm-1"></span> moyen</div>
+        <div><span class="swatch storm-2"></span> élevé</div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="js/script.js"></script>
+</body>
+</html>

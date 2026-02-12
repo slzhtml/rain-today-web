@@ -434,3 +434,15 @@ body.dark .toast .icon{ background: rgba(255,255,255,.08); }
 .ui-panel{
   box-sizing: border-box;
 }
+
+/* Panel toggle (visible partout) */
+.panel-toggle{
+  display: inline-block;
+  margin-bottom: 8px;
+}
+
+/* Quand replié */
+#bottomPanel.collapsed{
+  max-height: 92px;
+  overflow: hidden;
+}

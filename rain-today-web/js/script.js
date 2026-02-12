@@ -308,31 +308,24 @@ async function loadRadarFrames(){
   }
 }
 
-const url = `https://tilecache.rainviewer.com${frames[i].path}/512/{z}/{x}/{y}/2/1_1.png`;
+const url = `https://tilecache.rainviewer.com${frames[i].path}/256/{z}/{x}/{y}/2/1_1.png`;
 
 const transparentPng =
   "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8z8AABgAD/ctB9n8AAAAASUVORK5CYII=";
 
 if (!radarLayer) {
   radarLayer = L.tileLayer(url, {
-    pane: "radarPane",
-    opacity: 0.85,
-
-    // ✅ clé: on prend des tuiles 512 mais Leaflet calcule le zoom comme si c'était 256
-    tileSize: 512,
-    zoomOffset: -1,
-
-    // on reste safe (pas besoin de monter à 9/10)
-    maxNativeZoom: 7,
-    maxZoom: 19,
-
-    updateWhenZooming: true,
-    updateWhenIdle: false,
-    keepBuffer: 8,
-
-    crossOrigin: true,
-    errorTileUrl: transparentPng,
-  }).addTo(map);
+  pane: "radarPane",
+  opacity: 0.85,
+  tileSize: 256,
+  maxNativeZoom: 7,
+  maxZoom: 19,
+  updateWhenZooming: true,
+  updateWhenIdle: false,
+  keepBuffer: 8,
+  crossOrigin: true,
+  errorTileUrl: transparentPng
+}).addTo(map);
 } else {
   radarLayer.setUrl(url);
 }

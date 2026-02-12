@@ -66,6 +66,10 @@ const bmSat = document.getElementById("bmSat");
 const FAV_KEY = "rt_favs_v2";
 const ALERT_KEY = "rt_alerts_v2";
 
+// tile transparente en cas d’erreur de tuile radar
+const transparentPng =
+  "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8z8AABgAD/ctB9n8AAAAASUVORK5CYII=";
+
 /* ============
    REVERSE GEOCODING: get city from lat/lon
 ============ */
@@ -74,9 +78,7 @@ async function getCityName(lat, lon) {
     const res = await fetch(
       `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=10&addressdetails=1`
     );
-
     const data = await res.json();
-
     if (!data.address) return null;
 
     return (
@@ -97,7 +99,6 @@ async function getCityName(lat, lon) {
    THEME (smart night mode)
 ============ */
 function initTheme() {
-  // From localStorage if saved
   const saved = localStorage.getItem("rt_theme");
   if (saved === "dark") document.body.classList.add("dark");
   if (saved === "light") document.body.classList.remove("dark");
@@ -105,14 +106,13 @@ function initTheme() {
   themeBtn?.addEventListener("click", () => {
     document.body.classList.toggle("dark");
     localStorage.setItem("rt_theme", document.body.classList.contains("dark") ? "dark" : "light");
-    // refresh particles (trail color)
+
     if (windRunning) {
       clearCanvas();
       initParticles();
     }
   });
 
-  // Optional: auto-dark at night if no saved pref
   if (!saved) {
     const h = new Date().getHours();
     if (h >= 20 || h <= 6) document.body.classList.add("dark");
@@ -124,12 +124,12 @@ function initTheme() {
 ============ */
 async function initMap(lat, lon) {
   map = L.map("map", { zoomControl: true }).setView([lat, lon], 8);
-  
-  // Pane radar au-dessus du fond
-map.createPane("radarPane");
-map.getPane("radarPane").style.zIndex = 500;
 
-  // ✅ FIX: empêche le zoom/pan de la carte quand on scroll/click sur l'UI
+  // Pane radar au-dessus du fond
+  map.createPane("radarPane");
+  map.getPane("radarPane").style.zIndex = 500;
+
+  // Empêche le zoom/pan de la carte quand on scroll/click sur l'UI
   const topbarEl = document.querySelector(".topbar");
   const bottomPanelEl = document.getElementById("bottomPanel");
   const resultsEl = document.getElementById("searchResults");
@@ -146,13 +146,9 @@ map.getPane("radarPane").style.zIndex = 500;
     maxZoom: 19,
   });
 
-  // Simple satellite (Esri)
   baseSat = L.tileLayer(
     "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-    {
-      attribution: "Tiles &copy; Esri",
-      maxZoom: 19,
-    }
+    { attribution: "Tiles &copy; Esri", maxZoom: 19 }
   );
 
   baseOSM.addTo(map);
@@ -171,12 +167,14 @@ map.getPane("radarPane").style.zIndex = 500;
 
   // wind canvas
   windCanvas = document.getElementById("windCanvas");
-  windCtx = windCanvas.getContext("2d");
-  resizeCanvas();
-  window.addEventListener("resize", () => {
+  if (windCanvas) {
+    windCtx = windCanvas.getContext("2d");
     resizeCanvas();
-    if (windRunning) initParticles();
-  });
+    window.addEventListener("resize", () => {
+      resizeCanvas();
+      if (windRunning) initParticles();
+    });
+  }
 
   // init UI
   initTheme();
@@ -187,10 +185,10 @@ map.getPane("radarPane").style.zIndex = 500;
   startAlertLoop();
 
   // radar frames + first render
-  statusEl.textContent = "Chargement radar…";
+  if (statusEl) statusEl.textContent = "Chargement radar…";
   await loadRadarFrames();
   ensureRadarLayer();
-  updateFrameUI();
+  updateFrameUI(true);
 
   // map events
   map.on("click", async (e) => {
@@ -199,22 +197,23 @@ map.getPane("radarPane").style.zIndex = 500;
 
   map.on("moveend", async () => {
     await refreshCenterWind();
-    if (rainDirToggle.checked) drawRainDirection();
-    if (windArrowsToggle.checked) drawWindArrows();
+    if (rainDirToggle?.checked) drawRainDirection();
+    if (windArrowsToggle?.checked) drawWindArrows();
   });
 
   // start with center wind
   await refreshCenterWind();
 
   // start particles if enabled
-  if (windParticlesToggle.checked) startWindParticles();
-  if (rainDirToggle.checked) drawRainDirection();
-  if (windArrowsToggle.checked) drawWindArrows();
+  if (windParticlesToggle?.checked) startWindParticles();
+  if (rainDirToggle?.checked) drawRainDirection();
+  if (windArrowsToggle?.checked) drawWindArrows();
 
-  statusEl.textContent = "Radar prêt";
+  if (statusEl) statusEl.textContent = "Radar prêt";
 }
 
 function resizeCanvas() {
+  if (!windCanvas) return;
   windCanvas.width = window.innerWidth;
   windCanvas.height = window.innerHeight;
 }
@@ -225,16 +224,16 @@ function resizeCanvas() {
 function initBasemapSwitch() {
   bmOsm?.addEventListener("click", () => {
     bmOsm.classList.add("active");
-    bmSat.classList.remove("active");
-    if (map.hasLayer(baseSat)) map.removeLayer(baseSat);
-    if (!map.hasLayer(baseOSM)) map.addLayer(baseOSM);
+    bmSat?.classList.remove("active");
+    if (map?.hasLayer(baseSat)) map.removeLayer(baseSat);
+    if (map && baseOSM && !map.hasLayer(baseOSM)) map.addLayer(baseOSM);
   });
 
   bmSat?.addEventListener("click", () => {
     bmSat.classList.add("active");
-    bmOsm.classList.remove("active");
-    if (map.hasLayer(baseOSM)) map.removeLayer(baseOSM);
-    if (!map.hasLayer(baseSat)) map.addLayer(baseSat);
+    bmOsm?.classList.remove("active");
+    if (map?.hasLayer(baseOSM)) map.removeLayer(baseOSM);
+    if (map && baseSat && !map.hasLayer(baseSat)) map.addLayer(baseSat);
   });
 }
 
@@ -284,86 +283,116 @@ function initToggles() {
 /* ============
    RADAR (RainViewer) - VERSION STABLE (fix zoom)
 ============ */
-async function loadRadarFrames(){
-  try{
+async function loadRadarFrames() {
+  try {
     const res = await fetch("https://api.rainviewer.com/public/weather-maps.json");
     const data = await res.json();
 
-    // frames = objets { time, path }
-    frames = (data?.radar?.past || []).slice(-12); // ~12 dernières frames
+    frames = (data?.radar?.past || []).slice(-12);
     if (!frames.length) throw new Error("No radar frames");
 
     frameIndex = frames.length - 1;
 
-    // slider
-    sliderEl.max = String(frames.length - 1);
-    sliderEl.value = String(frameIndex);
+    if (sliderEl) {
+      sliderEl.max = String(frames.length - 1);
+      sliderEl.value = String(frameIndex);
+    }
 
-    showRadarFrame(frameIndex);
-    updateFrameUI();
-    statusEl.textContent = "Radar prêt";
-  }catch(err){
+    // on prépare le layer (si toggle ON)
+    setRadarFrame(frameIndex);
+    updateFrameUI(true);
+
+    if (statusEl) statusEl.textContent = "Radar prêt";
+  } catch (err) {
     console.error(err);
-    statusEl.textContent = "Erreur radar";
+    if (statusEl) statusEl.textContent = "Erreur radar";
   }
 }
 
-const url = `https://tilecache.rainviewer.com${frames[i].path}/256/{z}/{x}/{y}/2/1_1.png`;
-
-const transparentPng =
-  "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8z8AABgAD/ctB9n8AAAAASUVORK5CYII=";
-
-if (!radarLayer) {
-  radarLayer = L.tileLayer(url, {
-  pane: "radarPane",
-  opacity: 0.85,
-  tileSize: 256,
-  maxNativeZoom: 7,
-  maxZoom: 19,
-  updateWhenZooming: true,
-  updateWhenIdle: false,
-  keepBuffer: 8,
-  crossOrigin: true,
-  errorTileUrl: transparentPng
-}).addTo(map);
-} else {
-  radarLayer.setUrl(url);
+function buildRadarUrl(i) {
+  if (!frames.length || !frames[i]?.path) return null;
+  return `https://tilecache.rainviewer.com${frames[i].path}/256/{z}/{x}/{y}/2/1_1.png`;
 }
 
-function removeRadarLayer(){
-  if (radarLayer){
-    map.removeLayer(radarLayer);
-    radarLayer = null;
-  }
-}
-
-function updateFrameUI(){
+function ensureRadarLayer() {
+  if (!map) return;
+  if (!radarToggle || !radarToggle.checked) return;
   if (!frames.length) return;
 
-  // affiche l’heure de la frame
-  const ts = frames[frameIndex].time * 1000;
-  const d = new Date(ts);
-  timeLabelEl.textContent = d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+  // force rendu de la frame courante
+  setRadarFrame(frameIndex);
 }
 
-function startAnim(){
-  if (!frames.length || !radarToggle.checked) return;
+function setRadarFrame(i) {
+  showRadarFrame(i);
+}
 
-  playBtnEl.textContent = "⏸";
-  anim = setInterval(() => {
-    frameIndex = (frameIndex + 1) % frames.length;
+function showRadarFrame(i) {
+  if (!map) return;
+  if (!frames.length) return;
+
+  const url = buildRadarUrl(i);
+  if (!url) return;
+
+  if (!radarLayer) {
+    radarLayer = L.tileLayer(url, {
+      pane: "radarPane",
+      opacity: 0.85,
+      tileSize: 256,
+      maxNativeZoom: 7,
+      maxZoom: 19,
+      updateWhenZooming: true,
+      updateWhenIdle: false,
+      keepBuffer: 8,
+      crossOrigin: true,
+      errorTileUrl: transparentPng,
+    });
+
+    if (radarToggle?.checked) radarLayer.addTo(map);
+  } else {
+    radarLayer.setUrl(url);
+    if (radarToggle?.checked && !map.hasLayer(radarLayer)) radarLayer.addTo(map);
+  }
+}
+
+function removeRadarLayer() {
+  if (map && radarLayer) {
+    map.removeLayer(radarLayer);
+  }
+}
+
+function updateFrameUI(updateSlider = true) {
+  if (!frames.length) return;
+
+  if (updateSlider && sliderEl) {
     sliderEl.value = String(frameIndex);
+  }
+
+  const ts = frames[frameIndex].time * 1000;
+  const d = new Date(ts);
+  if (timeLabelEl) {
+    timeLabelEl.textContent = d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+  }
+}
+
+function startAnim() {
+  if (!frames.length || !radarToggle?.checked) return;
+
+  if (playBtnEl) playBtnEl.textContent = "⏸";
+  anim = setInterval(() => {
+    if (rainAutoToggle && !rainAutoToggle.checked) return; // respect toggle auto
+    frameIndex = (frameIndex + 1) % frames.length;
+    if (sliderEl) sliderEl.value = String(frameIndex);
     showRadarFrame(frameIndex);
-    updateFrameUI();
+    updateFrameUI(false);
   }, 700);
 }
 
-function stopAnim(){
+function stopAnim() {
   if (anim) clearInterval(anim);
   anim = null;
-  playBtnEl.textContent = "▶";
+  if (playBtnEl) playBtnEl.textContent = "▶";
 }
-
 
 /* ============
    MAP CLICK: fetch weather + popup
@@ -371,7 +400,6 @@ function stopAnim(){
 async function onMapClick(latlng) {
   const { lat, lng } = latlng;
 
-  // ✅ ville depuis coordonnées
   const city = await getCityName(lat, lng);
 
   const url =
@@ -412,10 +440,9 @@ async function onMapClick(latlng) {
 
     if (userMarker) userMarker.setLatLng([lat, lng]);
 
-    // refresh wind center + helpers
     await refreshCenterWind();
-    if (rainDirToggle.checked) drawRainDirection();
-    if (windArrowsToggle.checked) drawWindArrows();
+    if (rainDirToggle?.checked) drawRainDirection();
+    if (windArrowsToggle?.checked) drawWindArrows();
   } catch (err) {
     console.error(err);
   }
@@ -440,10 +467,10 @@ async function fetchPointWind(lat, lon) {
     const res = await fetch(url);
     const data = await res.json();
 
-    const spd = data.hourly.windspeed_10m[0];
-    const deg = data.hourly.winddirection_10m[0];
+    const spd = data?.hourly?.windspeed_10m?.[0];
+    const deg = data?.hourly?.winddirection_10m?.[0];
+    if (spd == null || deg == null) return null;
 
-    // Convert FROM to flow TO (deg+180)
     const toDeg = (deg + 180) % 360;
     const toRad = (toDeg * Math.PI) / 180;
 
@@ -459,6 +486,7 @@ async function fetchPointWind(lat, lon) {
 
 /* Wind particles (subtle) */
 function startWindParticles() {
+  if (!windCanvas || !windCtx) return;
   windRunning = true;
   initParticles();
   loopParticles();
@@ -469,6 +497,7 @@ function stopWindParticles() {
   clearCanvas();
 }
 function clearCanvas() {
+  if (!windCtx) return;
   windCtx.clearRect(0, 0, window.innerWidth, window.innerHeight);
 }
 function initParticles() {
@@ -480,9 +509,8 @@ function newParticle() {
   return { x: Math.random() * window.innerWidth, y: Math.random() * window.innerHeight, age: Math.random() * 120 };
 }
 function loopParticles() {
-  if (!windRunning) return;
+  if (!windRunning || !windCtx) return;
 
-  // Very light trails so radar stays readable
   windCtx.fillStyle = document.body.classList.contains("dark")
     ? "rgba(0,0,0,0.10)"
     : "rgba(255,255,255,0.10)";
@@ -580,7 +608,6 @@ function drawRainDirection() {
   rainDirLayer = L.layerGroup([], { pane: "rainDirPane" }).addTo(map);
 
   pts.forEach((p) => {
-    // Use center wind as a simple "movement" indicator for rain direction
     const icon = arrowIcon(Math.max(10, windCenter.spd), windCenter.deg, "rain");
     L.marker([p.lat, p.lon], { icon, interactive: false, pane: "rainDirPane" }).addTo(rainDirLayer);
   });
@@ -596,7 +623,7 @@ function clearRainDirection() {
    ICONS
 ============ */
 function arrowIcon(spd, degFrom, kind) {
-  const degTo = (degFrom + 180) % 360; // flow direction
+  const degTo = (degFrom + 180) % 360;
   const size = 20;
   const color = kind === "rain" ? "rgba(77,166,255,0.95)" : windColor(spd);
   const html = `
@@ -617,7 +644,7 @@ function arrowIcon(spd, degFrom, kind) {
 function initSearchUI() {
   let t = null;
 
-  citySearch.addEventListener("input", () => {
+  citySearch?.addEventListener("input", () => {
     const q = citySearch.value.trim();
     if (t) clearTimeout(t);
 
@@ -629,6 +656,7 @@ function initSearchUI() {
   });
 
   document.addEventListener("click", (e) => {
+    if (!searchResults) return;
     if (!searchResults.contains(e.target) && e.target !== citySearch) {
       hideResults();
     }
@@ -636,6 +664,7 @@ function initSearchUI() {
 }
 
 async function searchCity(q) {
+  if (!searchResults) return;
   const url = `https://nominatim.openstreetmap.org/search?format=json&limit=8&q=${encodeURIComponent(q)}`;
   try {
     const res = await fetch(url, { headers: { Accept: "application/json" } });
@@ -648,6 +677,7 @@ async function searchCity(q) {
 }
 
 function renderResults(items) {
+  if (!searchResults) return;
   searchResults.innerHTML = "";
   if (!items || !items.length) {
     hideResults();
@@ -668,16 +698,17 @@ function renderResults(items) {
   searchResults.classList.remove("hidden");
 }
 function hideResults() {
-  searchResults.classList.add("hidden");
+  searchResults?.classList.add("hidden");
 }
 
 /* ============
    FAVORITES (max 5)
 ============ */
-addFavBtn.addEventListener("click", () => {
+addFavBtn?.addEventListener("click", () => {
+  if (!map) return;
   const c = map.getCenter();
   const name =
-    citySearch.value && citySearch.value.trim().length >= 3
+    citySearch?.value && citySearch.value.trim().length >= 3
       ? citySearch.value.trim()
       : `Favori ${new Date().toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}`;
 
@@ -721,6 +752,7 @@ function removeFavorite(lat, lon) {
 }
 
 function renderFavs() {
+  if (!favList) return;
   const favs = getFavs();
   favList.innerHTML = "";
 
@@ -749,14 +781,15 @@ function renderFavs() {
    NAVIGATION
 ============ */
 async function goToLocation(lat, lon, label) {
+  if (!map) return;
   map.setView([lat, lon], Math.max(map.getZoom(), 8), { animate: true });
 
   if (userMarker) userMarker.setLatLng([lat, lon]);
-  citySearch.value = label || "";
+  if (citySearch) citySearch.value = label || "";
 
   await refreshCenterWind();
-  if (rainDirToggle.checked) drawRainDirection();
-  if (windArrowsToggle.checked) drawWindArrows();
+  if (rainDirToggle?.checked) drawRainDirection();
+  if (windArrowsToggle?.checked) drawWindArrows();
 
   pushToast({
     icon: "📍",
@@ -806,8 +839,7 @@ async function checkAlerts() {
   const st = getAlertState();
   const now = Date.now();
 
-  // Rain soon
-  const rain15 = data.minutely_15 && data.minutely_15.precipitation ? data.minutely_15.precipitation : [];
+  const rain15 = data?.minutely_15?.precipitation ? data.minutely_15.precipitation : [];
   const ev = computeRainEvent15(rain15);
   if (ev.startMin !== null && ev.startMin <= 90) {
     const key = `rain_${Math.round(lat * 100)}_${Math.round(lon * 100)}_${ev.startMin}`;
@@ -827,8 +859,7 @@ async function checkAlerts() {
     }
   }
 
-  // Wind peak soon
-  const windH = data.hourly && data.hourly.windspeed_10m ? data.hourly.windspeed_10m : [];
+  const windH = data?.hourly?.windspeed_10m ? data.hourly.windspeed_10m : [];
   const windPeak = findWindPeakSoon(windH);
   if (windPeak && windPeak.minutes <= 180 && windPeak.kmh >= 60) {
     const key = `wind_${Math.round(lat * 100)}_${Math.round(lon * 100)}_${windPeak.minutes}_${Math.round(
@@ -864,6 +895,8 @@ function findWindPeakSoon(arr) {
    TOASTS
 ============ */
 function pushToast({ icon, title, message, time, actionText, onAction }) {
+  if (!toastHost) return;
+
   const toast = document.createElement("div");
   toast.className = "toast";
 
@@ -961,7 +994,7 @@ function computeRainEvent15(arr) {
 function distKm(lat1, lon1, lat2, lon2) {
   const R = 6371;
   const dLat = ((lat2 - lat1) * Math.PI) / 180;
-  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+  const dLon = ((lat2 - lon1) * Math.PI) / 180;
   const a =
     Math.sin(dLat / 2) ** 2 +
     Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) * Math.sin(dLon / 2) ** 2;

@@ -350,12 +350,58 @@ body.dark .toast .icon{ background: rgba(255,255,255,.08); }
 /* === MOBILE RESPONSIVE === */
 @media (max-width: 768px) {
 
-  /* panneau du bas */
-  body > div:last-of-type {
-    max-height: 45vh;
-    overflow-y: auto;
-    padding: 12px;
+  /* Topbar plus compacte sur mobile */
+  .topbar{
+    top: 8px;
+    left: 8px;
+    right: 8px;
+    gap: 8px;
+    flex-wrap: wrap;
   }
 
+  .left-stack{
+    max-width: none;
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .search-wrap{
+    min-width: 0;
+    max-width: none;
+    width: 100%;
+  }
+
+  .fav-wrap{
+    width: 100%;
+    align-items: stretch;
+  }
+
+  /* ✅ Panneau du bas (overlay) : limité en hauteur + scroll interne */
+  .ui-panel{
+    max-height: 42vh;              /* ajuste: 35vh à 55vh */
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 10px 10px;
+  }
+
+  /* rendre les contrôles moins “larges” */
+  .toggles{
+    justify-content: flex-start;
+    gap: 8px;
+    font-size: 12px;
+  }
+
+  .controls{
+    gap: 8px;
+  }
+
+  .legend{
+    gap: 12px;
+    font-size: 11px;
+  }
+
+  .legend-col{
+    min-width: 140px;
+  }
 }
 

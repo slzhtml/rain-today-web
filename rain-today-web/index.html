@@ -2,13 +2,14 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Rain Today Pro SLZ</title>
 
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <link rel="stylesheet" href="css/style.css" />
 </head>
-<body>
+
+<body class="app">
   <div id="map"></div>
 
   <!-- Canvas overlay (vent particules) -->
@@ -32,13 +33,20 @@
     </div>
 
     <div class="fav-wrap">
-      <button id="addFavBtn" class="btn">⭐ Ajouter favori</button>
+      <button id="addFavBtn" class="btn" type="button">⭐ Ajouter favori</button>
       <div id="favList" class="fav-list"></div>
     </div>
   </div>
 
   <!-- Bottom panel -->
-  <div class="ui-panel">
+  <!-- ✅ IMPORTANT: id="bottomPanel" pour le CSS mobile -->
+  <div class="ui-panel" id="bottomPanel" role="region" aria-label="Contrôles météo">
+    
+    <!-- ✅ Bonus mobile: bouton pour réduire/ouvrir (ne gêne pas PC) -->
+    <button id="togglePanelBtn" class="panel-toggle btn" type="button" aria-expanded="true">
+      ⬇ Réduire
+    </button>
+
     <div class="top-row">
       <div id="status">Chargement…</div>
 
@@ -48,12 +56,12 @@
         <label><input type="checkbox" id="rainDirToggle" checked> Direction pluie</label>
         <label><input type="checkbox" id="windParticlesToggle" checked> Vent (particules)</label>
         <label><input type="checkbox" id="windArrowsToggle"> Vent (flèches)</label>
-        <button id="themeBtn" class="btn" title="Mode clair/sombre">🌙</button>
+        <button id="themeBtn" class="btn" type="button" title="Mode clair/sombre" aria-label="Mode clair/sombre">🌙</button>
       </div>
     </div>
 
     <div class="controls">
-      <button id="playBtn" class="btn" title="Animer">⏸</button>
+      <button id="playBtn" class="btn" type="button" title="Animer" aria-label="Lecture / Pause">⏸</button>
       <input type="range" id="timeline" min="0" max="10" value="0" />
       <span id="timeLabel"></span>
     </div>

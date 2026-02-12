@@ -67,18 +67,51 @@ const FAV_KEY = "rt_favs_v2";
 const ALERT_KEY = "rt_alerts_v2";
 
 /* ============
-   THEME
+   THEME (smart night mode)
 ============ */
 (function initTheme(){
-  const saved = localStorage.getItem("rt_theme");
-  if (saved === "dark") document.body.classList.add("dark");
-  themeBtn.textContent = document.body.classList.contains("dark") ? "☀️" : "🌙";
+  const KEY = "rt_theme";
+  let auto = localStorage.getItem(KEY) == null; // si pas de choix utilisateur => auto
 
+  const apply = (mode) => {
+    document.body.classList.toggle("dark", mode === "dark");
+    themeBtn.textContent = mode === "dark" ? "☀️" : "🌙";
+    themeBtn.setAttribute("aria-expanded", mode === "dark" ? "true" : "false");
+  };
+
+  const computeAutoMode = () => {
+    // 1) Si l’OS préfère le dark, on suit
+    if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      return "dark";
+    }
+    // 2) Sinon règle horaire locale
+    const h = new Date().getHours();
+    return (h >= 20 || h < 7) ? "dark" : "light";
+  };
+
+  // Au chargement
+  const saved = localStorage.getItem(KEY);
+  if (saved === "dark" || saved === "light") {
+    apply(saved);
+  } else {
+    apply(computeAutoMode());
+  }
+
+  // Auto update (tant que l’utilisateur n’a pas forcé)
+  const timer = setInterval(() => {
+    if (!auto) return;
+    apply(computeAutoMode());
+  }, 5 * 60 * 1000);
+
+  // Clic = préférence utilisateur -> on désactive l’auto
   themeBtn.addEventListener("click", () => {
-    document.body.classList.toggle("dark");
-    const isDark = document.body.classList.contains("dark");
-    localStorage.setItem("rt_theme", isDark ? "dark" : "light");
-    themeBtn.textContent = isDark ? "☀️" : "🌙";
+    auto = false;
+    clearInterval(timer);
+
+    const isDark = !document.body.classList.contains("dark");
+    const mode = isDark ? "dark" : "light";
+    localStorage.setItem(KEY, mode);
+    apply(mode);
   });
 })();
 

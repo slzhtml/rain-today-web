@@ -606,3 +606,34 @@ body.dark .toast .icon{ background: rgba(255,255,255,.08); }
     transform: scale(0.9);
   }
 }
+  
+/* Fix loupe géante (SVG) */
+.search-label{
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.search-label .input{
+  width: 100%;
+}
+
+.search-label .search-icon{
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  pointer-events: none;
+  opacity: 0.8;
+}
+
+.search-label .slash-icon{
+  position: absolute;
+  right: 38px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}

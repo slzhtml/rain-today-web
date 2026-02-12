@@ -955,3 +955,19 @@ navigator.geolocation.getCurrentPosition(
     btn.setAttribute("aria-expanded", collapsed ? "false" : "true");
   });
 })();
+
+document.addEventListener("DOMContentLoaded", () => {
+  const panel = document.getElementById("bottomPanel");
+  const btn = document.getElementById("togglePanelBtn");
+
+  if (!panel || !btn) return;
+
+  btn.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const collapsed = panel.classList.toggle("collapsed");
+    btn.textContent = collapsed ? "⬆ Ouvrir" : "⬇ Réduire";
+    btn.setAttribute("aria-expanded", collapsed ? "false" : "true");
+  });
+});

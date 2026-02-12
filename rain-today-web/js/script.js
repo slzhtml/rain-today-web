@@ -935,3 +935,23 @@ navigator.geolocation.getCurrentPosition(
   () => initMap(48.8566, 2.3522),
   { enableHighAccuracy: true, timeout: 10000 }
 );
+
+// Toggle panneau (mobile + PC)
+(() => {
+  const panel = document.getElementById("bottomPanel");
+  const btn = document.getElementById("togglePanelBtn");
+
+  if (!panel || !btn) {
+    console.warn("Toggle panel: éléments introuvables", { panel, btn });
+    return;
+  }
+
+  btn.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const collapsed = panel.classList.toggle("collapsed");
+    btn.textContent = collapsed ? "⬆ Ouvrir" : "⬇ Réduire";
+    btn.setAttribute("aria-expanded", collapsed ? "false" : "true");
+  });
+})();

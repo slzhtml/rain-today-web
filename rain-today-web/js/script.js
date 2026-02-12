@@ -308,37 +308,33 @@ async function loadRadarFrames(){
   }
 }
 
-function showRadarFrame(i){
-  if (!frames[i] || !map) return;
+const url = `https://tilecache.rainviewer.com${frames[i].path}/512/{z}/{x}/{y}/2/1_1.png`;
 
-  // ✅ 256px = le plus fiable (512 peut donner “pas de pluie” selon zones/zoom)
-  const url = `https://tilecache.rainviewer.com${frames[i].path}/256/{z}/{x}/{y}/2/1_1.png`;
+const transparentPng =
+  "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8z8AABgAD/ctB9n8AAAAASUVORK5CYII=";
 
-  // ✅ tuile transparente si RainViewer renvoie 404 (sinon tu “perds” la pluie en zoom)
-  const transparentPng =
-    "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8z8AABgAD/ctB9n8AAAAASUVORK5CYII=";
+if (!radarLayer) {
+  radarLayer = L.tileLayer(url, {
+    pane: "radarPane",
+    opacity: 0.85,
 
-  if (!radarLayer){
-    radarLayer = L.tileLayer(url, {
-      pane: "radarPane",
-      opacity: 0.85,
-      tileSize: 256,
+    // ✅ clé: on prend des tuiles 512 mais Leaflet calcule le zoom comme si c'était 256
+    tileSize: 512,
+    zoomOffset: -1,
 
-      // ✅ clé du fix zoom : RainViewer natif ~7, on upscale au-dessus
-      maxNativeZoom: 7,
-      maxZoom: 19,
+    // on reste safe (pas besoin de monter à 9/10)
+    maxNativeZoom: 7,
+    maxZoom: 19,
 
-      updateWhenZooming: true,
-      updateWhenIdle: false,
-      keepBuffer: 8,
+    updateWhenZooming: true,
+    updateWhenIdle: false,
+    keepBuffer: 8,
 
-      crossOrigin: true,
-      errorTileUrl: transparentPng
-    }).addTo(map);
-  }else{
-    radarLayer.setUrl(url);
-    if (radarToggle.checked && !map.hasLayer(radarLayer)) radarLayer.addTo(map);
-  }
+    crossOrigin: true,
+    errorTileUrl: transparentPng,
+  }).addTo(map);
+} else {
+  radarLayer.setUrl(url);
 }
 
 function removeRadarLayer(){

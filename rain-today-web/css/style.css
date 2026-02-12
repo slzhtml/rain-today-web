@@ -1,3 +1,6 @@
+/* =========================
+   THEME VARIABLES
+   ========================= */
 :root{
   --panel-bg: rgba(255,255,255,.94);
   --panel-text: #111;
@@ -18,23 +21,28 @@ body.dark{
   --shadow: 0 10px 30px rgba(0,0,0,.35);
 }
 
+/* =========================
+   BASE
+   ========================= */
 html, body { height: 100%; margin: 0; }
 body { font-family: Arial, sans-serif; }
 
 #map { height: 100vh; width: 100%; }
 
-/* Wind particles - subtle so radar stays visible */
+/* Wind particles canvas - subtle so radar stays visible */
 #windCanvas{
   position: fixed;
   left: 0; top: 0;
   width: 100vw; height: 100vh;
   pointer-events: none;
   z-index: 450;
-  opacity: 0.25;               /* <-- makes radar visible */
+  opacity: 0.25;
   mix-blend-mode: normal;
 }
 
-/* Topbar */
+/* =========================
+   TOPBAR
+   ========================= */
 .topbar{
   position: fixed;
   top: 10px;
@@ -86,20 +94,73 @@ body { font-family: Arial, sans-serif; }
   max-width: 520px;
 }
 
-#citySearch{
+/* =========================
+   SEARCH (Uiverse - Galahhad)
+   IMPORTANT: ton input doit avoir id="citySearch" + class="input"
+   ========================= */
+.search-label{
+  position: relative;
+  display: block;
   width: 100%;
-  padding: 12px 14px;
+}
+
+.search-label .input{
+  width: 100%;
+  height: 44px;
+  padding: 12px 50px 12px 14px; /* place pour / + loupe */
   border-radius: 14px;
   border: 1px solid var(--border);
   outline: none;
   box-shadow: var(--shadow);
   background: var(--panel-bg);
   color: var(--panel-text);
+  box-sizing: border-box;
 }
 
+.search-label .input::placeholder{
+  color: var(--muted);
+}
+
+.search-label .input:focus{
+  filter: brightness(0.99);
+}
+
+.search-label .search-icon{
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px !important;
+  height: 18px !important;
+  max-width: 18px !important;
+  max-height: 18px !important;
+  pointer-events: none;
+  opacity: 0.85;
+  display: block;
+}
+
+.search-label .slash-icon{
+  position: absolute;
+  right: 38px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 12px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.85);
+  pointer-events: none;
+}
+
+body:not(.dark) .search-label .slash-icon{
+  background: rgba(0,0,0,0.06);
+  color: rgba(0,0,0,0.55);
+}
+
+/* Search results dropdown */
 .search-results{
   position: absolute;
-  top: 46px;
+  top: 52px;
   left: 0;
   right: 0;
   background: var(--panel-bg);
@@ -107,8 +168,8 @@ body { font-family: Arial, sans-serif; }
   border-radius: 14px;
   box-shadow: var(--shadow);
   overflow: hidden;
+  z-index: 1300;
 }
-
 .search-results.hidden{ display: none; }
 
 .search-item{
@@ -120,6 +181,7 @@ body { font-family: Arial, sans-serif; }
 .search-item:first-child{ border-top: none; }
 .search-item:hover{ filter: brightness(0.96); }
 
+/* Favorites */
 .fav-wrap{
   display: flex;
   flex-direction: column;
@@ -171,7 +233,9 @@ body { font-family: Arial, sans-serif; }
 }
 .btn:active{ transform: scale(.98); }
 
-/* Bottom UI */
+/* =========================
+   BOTTOM UI PANEL
+   ========================= */
 .ui-panel{
   position: fixed;
   left: 0; bottom: 0;
@@ -182,6 +246,7 @@ body { font-family: Arial, sans-serif; }
   border-top: 1px solid var(--border);
   box-shadow: 0 -2px 14px rgba(0,0,0,.20);
   padding: 10px 12px;
+  box-sizing: border-box;
 }
 
 .top-row{
@@ -203,6 +268,7 @@ body { font-family: Arial, sans-serif; }
   color: var(--muted);
 }
 
+/* Si tu utilises encore des <label><input ...> ... </label> */
 .toggles label{
   display:flex;
   align-items:center;
@@ -218,7 +284,7 @@ body { font-family: Arial, sans-serif; }
 }
 
 #timeline{ flex: 1; }
-#timeLabel{ font-weight: 900; color: var(--panel-text); }
+#timeLabel{ font-weight: 900; color: var(--panel-text); white-space: nowrap; }
 
 .legend{
   display:flex;
@@ -268,7 +334,9 @@ body { font-family: Arial, sans-serif; }
 .storm-1{ background:#ff66d9; }
 .storm-2{ background:#c000ff; }
 
-/* Toasts */
+/* =========================
+   TOASTS
+   ========================= */
 .toast-host{
   position: fixed;
   top: 90px;
@@ -347,10 +415,116 @@ body.dark .toast .icon{ background: rgba(255,255,255,.08); }
 }
 .toast{ animation: toastIn .18s ease-out; }
 
-/* === MOBILE RESPONSIVE === */
-@media (max-width: 768px) {
+/* =========================
+   CHECKBOX (Uiverse - vishnupprajapat)
+   IMPORTANT: garde tes IDs (radarToggle, etc.)
+   ========================= */
+.checkbox-wrapper-46 input[type="checkbox"]{
+  display: none;
+  visibility: hidden;
+}
 
-  /* Topbar plus compacte sur mobile */
+.checkbox-wrapper-46{
+  display: inline-flex;
+  align-items: center;
+}
+
+.checkbox-wrapper-46 .cbx{
+  margin: 0; /* IMPORTANT: pas margin:auto */
+  user-select: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+}
+
+.checkbox-wrapper-46 .cbx span{
+  display: inline-block;
+  vertical-align: middle;
+  transform: translate3d(0,0,0);
+}
+
+.checkbox-wrapper-46 .cbx span:first-child{
+  position: relative;
+  width: 18px;
+  height: 18px;
+  border-radius: 3px;
+  transform: scale(1);
+  border: 1px solid #9098a9;
+  transition: all 0.2s ease;
+}
+
+.checkbox-wrapper-46 .cbx span:first-child svg{
+  position: absolute;
+  top: 3px;
+  left: 2px;
+  fill: none;
+  stroke: #ffffff;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 16px;
+  stroke-dashoffset: 16px;
+  transition: all 0.3s ease;
+  transition-delay: 0.1s;
+}
+
+.checkbox-wrapper-46 .cbx span:first-child:before{
+  content: "";
+  width: 100%;
+  height: 100%;
+  background: #506eec;
+  display: block;
+  transform: scale(0);
+  opacity: 1;
+  border-radius: 50%;
+}
+
+.checkbox-wrapper-46 .cbx span:last-child{
+  padding-left: 8px;
+}
+
+.checkbox-wrapper-46 .cbx:hover span:first-child{
+  border-color: #506eec;
+}
+
+.checkbox-wrapper-46 .inp-cbx:checked + .cbx span:first-child{
+  background: #506eec;
+  border-color: #506eec;
+  animation: wave-46 0.4s ease;
+}
+
+.checkbox-wrapper-46 .inp-cbx:checked + .cbx span:first-child svg{
+  stroke-dashoffset: 0;
+}
+
+.checkbox-wrapper-46 .inp-cbx:checked + .cbx span:first-child:before{
+  transform: scale(3.5);
+  opacity: 0;
+  transition: all 0.6s ease;
+}
+
+@keyframes wave-46{
+  50%{ transform: scale(0.9); }
+}
+
+/* =========================
+   PANEL TOGGLE (mobile btn)
+   ========================= */
+.panel-toggle{
+  display: inline-block;
+  margin-bottom: 8px;
+}
+
+#bottomPanel.collapsed{
+  max-height: 92px;
+  overflow: hidden;
+}
+
+/* =========================
+   RESPONSIVE MOBILE
+   ========================= */
+@media (max-width: 768px){
+
   .topbar{
     top: 8px;
     left: 8px;
@@ -376,343 +550,47 @@ body.dark .toast .icon{ background: rgba(255,255,255,.08); }
     align-items: stretch;
   }
 
-  /* ✅ Panneau du bas (overlay) : limité en hauteur + scroll interne */
+  /* panneau: comme ton rendu “avant” */
   .ui-panel{
-    max-height: 50vh;           
+    max-height: 50vh;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     padding: 10px 10px;
   }
 
-  /* rendre les contrôles moins “larges” */
   .toggles{
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 10px;
-  font-size: 13px;
-}
+    justify-content: flex-start;
+    gap: 10px;
+    font-size: 13px;
+  }
 
   .controls{
     gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  #timeLabel{
+    margin-left: auto;
+    padding-right: 6px;
+    white-space: nowrap;
+  }
+
+  #timeline{
+    min-width: 220px;
+    flex: 1 1 220px;
   }
 
   .legend{
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  font-size: 11px;
-}
+    gap: 12px;
+    font-size: 11px;
+  }
 
-.legend-col{
-  min-width: 140px;
-}
-
-/* --- Fix label heure coupé --- */
-.controls{
-  flex-wrap: wrap;          /* autorise le retour à la ligne si manque de place */
-}
-
-#timeLabel{
-  margin-left: auto;        /* pousse l’heure à droite proprement */
-  padding-left: 10px;
-  padding-right: 10px;      /* évite d’être collé au bord */
-  white-space: nowrap;      /* évite que l’heure se coupe en 2 lignes */
-}
-
-#timeline{
-  min-width: 220px;         /* évite que le range prenne tout et écrase l’heure */
-  flex: 1 1 220px;          /* flexible mais garde une base */
-}
-
-@media (max-width: 768px){
-  #timeLabel{
-    width: 100%;
-    text-align: right;
-    padding-right: 4px;
+  .legend-col{
+    min-width: 140px;
   }
 }
 
-/* sécurité layout */
-.ui-panel{
-  box-sizing: border-box;
-}
-
-/* Panel toggle (visible partout) */
-.panel-toggle{
-  display: inline-block;
-  margin-bottom: 8px;
-}
-
-/* Quand replié */
-#bottomPanel.collapsed{
-  max-height: 92px;
-  overflow: hidden;
-}
-
-/* ===== Animations fluides ===== */
-.ui-panel{
-  transition: max-height .35s cubic-bezier(.4,0,.2,1),
-              padding .25s ease,
-              transform .25s ease;
-  will-change: max-height, transform;
-}
-
-#bottomPanel.collapsed{
-  transition: max-height .35s cubic-bezier(.4,0,.2,1);
-}
-
-.btn, .chip, .fav-chip{
-  transition: transform .15s ease, filter .15s ease, opacity .15s ease;
-}
-
-.btn:hover, .chip:hover, .fav-chip:hover{
-  transform: translateY(-1px);
-  filter: brightness(0.98);
-}
-
-.btn:active, .chip:active, .fav-chip:active{
-  transform: translateY(0);
-}
-
-/* Respecte "réduire les animations" du téléphone/OS */
+/* Respecte "réduire les animations" */
 @media (prefers-reduced-motion: reduce){
   * { transition: none !important; animation: none !important; }
 }
-/* Search UI (Uiverse - Galahhad) */
-.search-label{
-  position: relative;
-  display: flex;
-  align-items: center;
-  width: 320px;           /* ajuste si besoin */
-  max-width: 100%;
-}
-
-.search-label .input{
-  width: 100%;
-  height: 40px;
-  padding: 10px 42px 10px 14px;   /* place pour l’icône */
-  border-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.15);
-  background: rgba(0,0,0,0.35);
-  color: #fff;
-  outline: none;
-}
-
-.search-label .input::placeholder{
-  color: rgba(255,255,255,0.65);
-}
-
-.search-label .input:focus{
-  border-color: rgba(255,255,255,0.35);
-  background: rgba(0,0,0,0.45);
-}
-
-.search-label .search-icon{
-  position: absolute;
-  right: 12px;
-  width: 18px;
-  height: 18px;
-  opacity: 0.85;
-  pointer-events: none;
-}
-
-.search-label .slash-icon{
-  position: absolute;
-  right: 38px;
-  font-size: 12px;
-  padding: 2px 6px;
-  border-radius: 6px;
-  background: rgba(255,255,255,0.12);
-  color: rgba(255,255,255,0.85);
-  pointer-events: none;
-}
-
-/* From Uiverse.io by vishnupprajapat */ 
-.checkbox-wrapper-46 input[type="checkbox"] {
-  display: none;
-  visibility: hidden;
-}
-
-.checkbox-wrapper-46 .cbx {
-  margin: auto;
-  -webkit-user-select: none;
-  user-select: none;
-  cursor: pointer;
-}
-.checkbox-wrapper-46 .cbx span {
-  display: inline-block;
-  vertical-align: middle;
-  transform: translate3d(0, 0, 0);
-}
-.checkbox-wrapper-46 .cbx span:first-child {
-  position: relative;
-  width: 18px;
-  height: 18px;
-  border-radius: 3px;
-  transform: scale(1);
-  vertical-align: middle;
-  border: 1px solid #9098a9;
-  transition: all 0.2s ease;
-}
-.checkbox-wrapper-46 .cbx span:first-child svg {
-  position: absolute;
-  top: 3px;
-  left: 2px;
-  fill: none;
-  stroke: #ffffff;
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-dasharray: 16px;
-  stroke-dashoffset: 16px;
-  transition: all 0.3s ease;
-  transition-delay: 0.1s;
-  transform: translate3d(0, 0, 0);
-}
-.checkbox-wrapper-46 .cbx span:first-child:before {
-  content: "";
-  width: 100%;
-  height: 100%;
-  background: #506eec;
-  display: block;
-  transform: scale(0);
-  opacity: 1;
-  border-radius: 50%;
-}
-.checkbox-wrapper-46 .cbx span:last-child {
-  padding-left: 8px;
-}
-.checkbox-wrapper-46 .cbx:hover span:first-child {
-  border-color: #506eec;
-}
-
-.checkbox-wrapper-46 .inp-cbx:checked + .cbx span:first-child {
-  background: #506eec;
-  border-color: #506eec;
-  animation: wave-46 0.4s ease;
-}
-.checkbox-wrapper-46 .inp-cbx:checked + .cbx span:first-child svg {
-  stroke-dashoffset: 0;
-}
-.checkbox-wrapper-46 .inp-cbx:checked + .cbx span:first-child:before {
-  transform: scale(3.5);
-  opacity: 0;
-  transition: all 0.6s ease;
-}
-
-@keyframes wave-46 {
-  50% {
-    transform: scale(0.9);
-  }
-}
-  
-/* Fix loupe géante (SVG) */
-.search-label{
-  position: relative;
-  display: flex;
-  align-items: center;
-  width: 100%;
-}
-
-.search-label .input{
-  width: 100%;
-}
-
-.search-label .search-icon{
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 18px;
-  height: 18px;
-  pointer-events: none;
-  opacity: 0.8;
-}
-
-.search-label .slash-icon{
-  position: absolute;
-  right: 38px;
-  top: 50%;
-  transform: translateY(-50%);
-  pointer-events: none;
-}
-.search-label{
-  position: relative;
-  display: flex;
-  align-items: center;
-  width: 100%;
-}
-
-.search-label .search-icon{
-  position: absolute;
-  right: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 18px;
-  height: 18px;
-  pointer-events: none;
-}
-
-.search-label .input{
-  width: 100%;
-  padding-right: 40px; /* espace pour la loupe */
-}
-
-/* --- FIX DEFINITIF : loupe SVG géante --- */
-.search-wrap .search-label{
-  position: relative !important;
-  display: block !important;
-}
-
-.search-wrap .search-label .input{
-  width: 100% !important;
-  padding-right: 48px !important; /* place pour loupe + / */
-  box-sizing: border-box !important;
-}
-
-.search-wrap .search-label .search-icon{
-  position: absolute !important;
-  right: 14px !important;
-  top: 50% !important;
-  transform: translateY(-50%) !important;
-
-  width: 18px !important;
-  height: 18px !important;
-  max-width: 18px !important;
-  max-height: 18px !important;
-
-  display: block !important;
-  pointer-events: none !important;
-}
-
-.search-wrap .search-label .slash-icon{
-  position: absolute !important;
-  right: 40px !important;
-  top: 50% !important;
-  transform: translateY(-50%) !important;
-  po
-
-  /* FIX loupe géante */
-.search-label {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.search-label .search-icon {
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 18px !important;
-  height: 18px !important;
-  max-width: 18px !important;
-  max-height: 18px !important;
-  pointer-events: none;
-}
-
-.search-label .input {
-  padding-right: 40px;
-}
-

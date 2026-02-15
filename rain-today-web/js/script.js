@@ -381,8 +381,17 @@ function updateFrameUI(updateSlider = true) {
 
   const ts = frames[frameIndex].time * 1000;
   const d = new Date(ts);
+
+  // Compare à "maintenant" pour afficher Passé / Futur
+  const diffMin = Math.round((ts - Date.now()) / 60000);
+  const tag =
+    diffMin < -2 ? `Passé (${Math.abs(diffMin)} min)` :
+    diffMin > 2  ? `Futur (+${diffMin} min)` :
+                   "Maintenant";
+
   if (timeLabelEl) {
-    timeLabelEl.textContent = d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+    timeLabelEl.textContent =
+      `${d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })} — ${tag}`;
   }
 }
 

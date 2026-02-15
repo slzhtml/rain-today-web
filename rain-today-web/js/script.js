@@ -288,26 +288,37 @@ async function loadRadarFrames() {
     const res = await fetch("https://api.rainviewer.com/public/weather-maps.json");
     const data = await res.json();
 
-    frames = (data?.radar?.past || []).slice(-12);
+    const past = data?.radar?.past || [];
+    const nowcast = data?.radar?.nowcast || [];
+
+    // 1h passé = 4 frames de 15 min (selon dispo)
+    const pastWanted = past.slice(-4);
+
+    // 2h futur = 8 frames de 15 min (selon dispo)
+    const futureWanted = nowcast.slice(0, 8);
+
+    frames = [...pastWanted, ...futureWanted];
+
     if (!frames.length) throw new Error("No radar frames");
 
-    frameIndex = frames.length - 1;
+    // Par défaut on se met sur la frame la + proche du "maintenant"
+    // (dernière du passé si elle existe, sinon première du futur)
+    frameIndex = pastWanted.length ? pastWanted.length - 1 : 0;
 
     if (sliderEl) {
       sliderEl.max = String(frames.length - 1);
       sliderEl.value = String(frameIndex);
     }
 
-    // on prépare le layer (si toggle ON)
     setRadarFrame(frameIndex);
     updateFrameUI(true);
-
     if (statusEl) statusEl.textContent = "Radar prêt";
   } catch (err) {
     console.error(err);
     if (statusEl) statusEl.textContent = "Erreur radar";
   }
 }
+
 
 function buildRadarUrl(i) {
   if (!frames.length || !frames[i]?.path) return null;
